@@ -1,0 +1,12 @@
+.block-hidden, .block{
+    display: inline-block;
+    border: 1px solid black;
+}
+
+.block{
+    background-color: #b1ede8;
+}
+
+.block-hidden{
+    background-color: #ff6978;
+}
