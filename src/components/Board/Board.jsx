@@ -1,10 +1,14 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import ResizeDetector from 'react-resize-detector'
+import './Board.css'
 import Block from '../Block'
 
-const Board = ({difficulty, onGameStarted, onGameEnded}) => {
+const Board = ({difficulty, onGameStarted, onGameEnded, onFlagSubstract, onFlagAdd}) => {
 
     const [gameStarted, setGameStarted] = useState(false)
+    const [blocks, setBlocks] = useState(null)
+
+    const board = useRef()
 
     const generateMinesPosition = () => {
 
@@ -82,9 +86,19 @@ const Board = ({difficulty, onGameStarted, onGameEnded}) => {
 
     }
 
+    const handleFlagAdd = () =>{
+        console.log('onFlagAdd BOARD');
+        onFlagAdd()
+    }
+
+    const handleFlagSubstract = () => {
+        console.log('onFlagSubstract BOARD');
+        onFlagSubstract()
+    }
+
     const blockGenerator = (boardWidth, boardHeight) => {
         try {
-    
+            console.log(boardWidth, boardHeight);
             const boardArea = boardWidth * boardHeight
             let array = []
             const blocksToGenerate = difficulty.blocks
@@ -106,7 +120,7 @@ const Board = ({difficulty, onGameStarted, onGameEnded}) => {
         
             
             let locationIndx = 0
-            return(
+            setBlocks(
                 <React.Fragment>
                 {array.map((value, index) => {
                     
@@ -127,7 +141,9 @@ const Board = ({difficulty, onGameStarted, onGameEnded}) => {
                         mine={isMine} 
                         nearbyMines={nearbyMines}
                         onZeroClicked={handleZeroClicked}
-                        onGameLost={() => {onGameEnded('lose')}}/>
+                        onGameLost={() => {onGameEnded('lose')}}
+                        onFlagSubstract={handleFlagSubstract}
+                        onFlagAdd={handleFlagAdd}/>
                     )
                 })}
                 </React.Fragment>
@@ -146,16 +162,17 @@ const Board = ({difficulty, onGameStarted, onGameEnded}) => {
         
     }
 
+    useEffect(() => {
+        blockGenerator(board.current.offsetWidth, board.current.offsetHeight)
+        console.log(board.current);
+    }, [difficulty])
+
     return(
-        <ResizeDetector handleWidth>
-    {
-        ({width, height}) => (
-        <div className='board' onClick={handleClick}>
-            {blockGenerator(width, height)}
+ 
+        <div ref={board} className='board' onContextMenu={handleClick} onClick={handleClick}>
+            {blocks}
         </div>
-        )
-    }
-    </ResizeDetector>
+        
     )
 }
 

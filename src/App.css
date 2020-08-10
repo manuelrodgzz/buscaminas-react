@@ -16,11 +16,3 @@
   margin-right: auto;
   margin-left: auto;
 }
-
-.board{
-  width: auto;
-  height: 100%;
-  display: inline-block;
-  position: relative;
-  /* overflow-y: hidden; */
-}

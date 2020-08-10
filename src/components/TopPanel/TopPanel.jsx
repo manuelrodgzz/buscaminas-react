@@ -3,9 +3,9 @@ import FlagIcon from '@material-ui/icons/Flag';
 import TimerIcon from '@material-ui/icons/Timer';
 import './TopPanel.css'
 
-const TopPanel = ({difficultyOptions, onDifficultyChanged, startTimer}) => {
+const TopPanel = ({flagsLeft, difficultyOptions, onDifficultyChanged, startTimer}) => {
 
-    const [minesLeft, setMinesLeft] = useState(difficultyOptions.easy.mines)
+    console.log('FLAGS', flagsLeft)
     const [timer, setTimer] = useState(0)
     const difficultySelector = useRef()
 
@@ -15,7 +15,6 @@ const TopPanel = ({difficultyOptions, onDifficultyChanged, startTimer}) => {
 
         difficultySelector.current.addEventListener('change', () => {
             onDifficultyChanged(difficultyOptions[difficultySelector.current.value])
-            setMinesLeft(difficultyOptions[difficultySelector.current.value].mines)
         })
 
         if(startTimer)
@@ -24,7 +23,6 @@ const TopPanel = ({difficultyOptions, onDifficultyChanged, startTimer}) => {
         return  () => {
             difficultySelector.current.removeEventListener('change', () => {
                 onDifficultyChanged(difficultyOptions[difficultySelector.current.value])
-                setMinesLeft(difficultyOptions[difficultySelector.current.value].mines)
                 })
 
             clearInterval(interval)
@@ -45,7 +43,7 @@ const TopPanel = ({difficultyOptions, onDifficultyChanged, startTimer}) => {
 
             <div className='mines-left'>
             <FlagIcon fontSize='small' style={{color: 'red', marginRight: 5}}/>
-            {minesLeft}
+            {flagsLeft}
             </div>
 
             <div className='timer'>

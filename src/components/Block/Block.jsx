@@ -3,10 +3,11 @@ import FlagIcon from '@material-ui/icons/Flag'
 import PropTypes from 'prop-types'
 import './Block.css'
 
-const Block = ({index, size, text, mine, nearbyMines, isHidden, onZeroClicked, onGameLost}) => {
+const Block = ({onFlagSubstract, onFlagAdd, index, size, text, mine, nearbyMines, isHidden, onZeroClicked, onGameLost}) => {
 
 
     const [hidden, setHidden] = useState(isHidden)
+    const [hasFlag, setHasFlag] = useState(false)
 
     //Este estilo sirve para que el width tenga x porcentaje y el height tenga el mismo x porcentaje pero basado en el width
     const blockStyle = {
@@ -25,6 +26,7 @@ const Block = ({index, size, text, mine, nearbyMines, isHidden, onZeroClicked, o
     }
 
     const handleClick = () => {
+
         if(hidden)
             setHidden(false)
 
@@ -38,11 +40,29 @@ const Block = ({index, size, text, mine, nearbyMines, isHidden, onZeroClicked, o
         }
     }
 
+    const handleRightClick = (e) => {
+
+        e.preventDefault()
+        setHasFlag(!hasFlag)
+
+        if(hasFlag){
+            onFlagAdd()
+            console.log('onFlagAdd');
+        }
+        else{
+            onFlagSubstract()
+            console.log('onFlagSubstract')
+        }
+
+
+    }
+
     return(
-        <div style={blockStyle} onClick={handleClick} className={hidden ? 'block-hidden' : 'block'}>
+        <div style={blockStyle} onContextMenu={handleRightClick} onClick={handleClick} className={hidden ? 'block-hidden' : 'block'}>
             {mine.toString()}
+            {hidden && hasFlag && <p style={{color: 'red'}}><FlagIcon fontSize='small' /></p>}
             {!hidden && <p style={textStyle}>
-                {mine ? <FlagIcon fontSize='small'/> : nearbyMines}
+                {mine ? <span role='img' aria-label='emoji-bomb'>💣</span> : nearbyMines}
             </p>}
         </div>
     )
