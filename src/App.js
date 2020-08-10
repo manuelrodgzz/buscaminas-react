@@ -6,7 +6,7 @@ import './App.css';
 
 const difficultyOptions = {
   easy: {
-    mines: 10,
+    mines: 78,
     blocks: 81
   },
   normal: {
@@ -24,6 +24,7 @@ function App() {
   const [flagsLeft, setFlagsLeft] = useState(difficultyOptions.easy.mines)
   const [difficulty, setDifficulty] = useState(difficultyOptions.easy)
   const [startTimer, setStartTimer] = useState(false)
+  const [timer, setTimer] = useState(0)
 
   const beginTimer = () => {
     if(!startTimer)
@@ -35,7 +36,7 @@ function App() {
 
     const win = result === 'win' ? true : false
 
-    Alert.GameEnd(win, 50, () => {})
+    Alert.GameEnd(win, timer, () => {})
   }
 
   const handleDifficultyChanged = (newDifficulty) => {
@@ -44,25 +45,29 @@ function App() {
   }
 
   const handleFlagSubstract = () => {
-    console.log('onFlagSubstract APP');
-    setFlagsLeft(flagsLeft - 1)
+    setFlagsLeft((flagsLeft) => flagsLeft - 1)
   }
 
   const handleFlagAdd = () => {
-    console.log('onFlagAdd APP')
-    setFlagsLeft(flagsLeft + 1)
+    setFlagsLeft((flagsLeft) => flagsLeft + 1)
+  }
+
+  const handleTimerUpdate = (timer) => {
+    setTimer(timer)
   }
 
   return (
     <div className="app">
       <div className='game'>
-        <TopPanel flagsLeft={flagsLeft} onDifficultyChanged={handleDifficultyChanged} difficultyOptions={difficultyOptions} startTimer={startTimer}/>
+        <TopPanel onTimerUpdate={handleTimerUpdate} flagsLeft={flagsLeft} onDifficultyChanged={handleDifficultyChanged} difficultyOptions={difficultyOptions} startTimer={startTimer}/>
         <Board 
         onFlagSubstract={handleFlagSubstract} 
         onFlagAdd={handleFlagAdd} 
         onGameEnded={handleGameEnd} 
         onGameStarted={beginTimer} 
-        difficulty={difficulty} />
+        difficulty={difficulty} 
+        flagEnabled={flagsLeft > 0 ? true : false}
+        />
       </div>
     </div>
   );

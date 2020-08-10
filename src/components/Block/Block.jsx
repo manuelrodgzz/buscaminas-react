@@ -3,7 +3,7 @@ import FlagIcon from '@material-ui/icons/Flag'
 import PropTypes from 'prop-types'
 import './Block.css'
 
-const Block = ({onFlagSubstract, onFlagAdd, index, size, text, mine, nearbyMines, isHidden, onZeroClicked, onGameLost}) => {
+const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagAdd, index, size, text, mine, nearbyMines, isHidden, onGameEnd}) => {
 
 
     const [hidden, setHidden] = useState(isHidden)
@@ -27,15 +27,22 @@ const Block = ({onFlagSubstract, onFlagAdd, index, size, text, mine, nearbyMines
 
     const handleClick = () => {
 
-        if(hidden)
+        if(hidden){
+
             setHidden(false)
 
-        if(nearbyMines === 0 && !mine){
-            onZeroClicked(index)
+            if(nearbyMines === 0 && !mine){
+
+            }
+
+            onBlockClicked(index)
+
+            if(lastBlock)
+                onGameEnd('win')
         }
 
         if(mine){
-            onGameLost()
+            onGameEnd('lose')
             console.log('perdiste 1');
         }
     }
@@ -43,18 +50,19 @@ const Block = ({onFlagSubstract, onFlagAdd, index, size, text, mine, nearbyMines
     const handleRightClick = (e) => {
 
         e.preventDefault()
-        setHasFlag(!hasFlag)
-
+            
         if(hasFlag){
             onFlagAdd()
-            console.log('onFlagAdd');
         }
         else{
+            if(!flagEnabled)
+                return
+                
             onFlagSubstract()
-            console.log('onFlagSubstract')
         }
-
-
+        
+        setHasFlag(!hasFlag)
+            
     }
 
     return(

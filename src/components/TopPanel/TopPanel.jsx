@@ -3,9 +3,8 @@ import FlagIcon from '@material-ui/icons/Flag';
 import TimerIcon from '@material-ui/icons/Timer';
 import './TopPanel.css'
 
-const TopPanel = ({flagsLeft, difficultyOptions, onDifficultyChanged, startTimer}) => {
+const TopPanel = ({onTimerUpdate, flagsLeft, difficultyOptions, onDifficultyChanged, startTimer}) => {
 
-    console.log('FLAGS', flagsLeft)
     const [timer, setTimer] = useState(0)
     const difficultySelector = useRef()
 
@@ -18,7 +17,10 @@ const TopPanel = ({flagsLeft, difficultyOptions, onDifficultyChanged, startTimer
         })
 
         if(startTimer)
-            interval = setInterval(() => {setTimer(timer + 1); console.log('tik');}, 1000)
+            interval = setInterval(() => {
+                setTimer(timer + 1);
+                onTimerUpdate(timer+1)
+            }, 1000)
     
         return  () => {
             difficultySelector.current.removeEventListener('change', () => {

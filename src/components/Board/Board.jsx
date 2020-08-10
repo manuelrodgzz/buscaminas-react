@@ -3,10 +3,11 @@ import ResizeDetector from 'react-resize-detector'
 import './Board.css'
 import Block from '../Block'
 
-const Board = ({difficulty, onGameStarted, onGameEnded, onFlagSubstract, onFlagAdd}) => {
+const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubstract, onFlagAdd}) => {
 
     const [gameStarted, setGameStarted] = useState(false)
     const [blocks, setBlocks] = useState(null)
+    const [minesPosition, setMinesPosition] = useState([])
 
     const board = useRef()
 
@@ -17,7 +18,7 @@ const Board = ({difficulty, onGameStarted, onGameEnded, onFlagSubstract, onFlagA
 
         for(let i = 0; i < difficulty.mines; i++){
 
-            do rndmNumber = Math.floor(Math.random() * (difficulty.blocks + 1))    
+            do rndmNumber = Math.floor(Math.random() * (difficulty.blocks))    
             while(array.find(number => number === rndmNumber) === rndmNumber)
 
             array.push(rndmNumber)
@@ -82,17 +83,25 @@ const Board = ({difficulty, onGameStarted, onGameEnded, onFlagSubstract, onFlagA
         return minesCounter        
     }
 
-    const handleZeroClicked = (index) => {
+    const handleBlockClicked = (index) => {
 
+        setBlocks({
+            array: blocks.array.map(block => {
+            
+                if(block.index === index)
+                    block.hidden = false
+                
+                return block
+            }),
+            safeBlocksLeft: blocks.safeBlocksLeft-1
+        })
     }
 
     const handleFlagAdd = () =>{
-        console.log('onFlagAdd BOARD');
         onFlagAdd()
     }
 
     const handleFlagSubstract = () => {
-        console.log('onFlagSubstract BOARD');
         onFlagSubstract()
     }
 
@@ -111,8 +120,7 @@ const Board = ({difficulty, onGameStarted, onGameEnded, onFlagSubstract, onFlagA
         
             //console.log('blocksToGenerate', blocksToGenerate);
             //console.log('blockSize', blockSize);
-        
-            const minesLocation = generateMinesPosition()
+    
             //console.log(minesLocation);
 
             for(let i = 0; i < blocksToGenerate; i++)
@@ -120,34 +128,31 @@ const Board = ({difficulty, onGameStarted, onGameEnded, onFlagSubstract, onFlagA
         
             
             let locationIndx = 0
-            setBlocks(
-                <React.Fragment>
-                {array.map((value, index) => {
-                    
-                    let isMine = index === minesLocation[locationIndx]
+            setBlocks({
 
-                    const nearbyMines = getNearbyMines(index, minesLocation, blocksPerRow, blocksPerColumn)
+                array: array.map((value, index) => {
+                    
+                    let isMine = index === minesPosition[locationIndx]
+
+                    const nearbyMines = getNearbyMines(index, minesPosition, blocksPerRow, blocksPerColumn)
 
                     if(isMine){
                         locationIndx++
                     }
 
-                    return (
-                        <Block 
-                        index={index}
-                        key={index} 
-                        size={`${blockSize}px`} 
-                        text={index} 
-                        mine={isMine} 
-                        nearbyMines={nearbyMines}
-                        onZeroClicked={handleZeroClicked}
-                        onGameLost={() => {onGameEnded('lose')}}
-                        onFlagSubstract={handleFlagSubstract}
-                        onFlagAdd={handleFlagAdd}/>
-                    )
-                })}
-                </React.Fragment>
-            )
+                    return {
+                        index,
+                        size: `${blockSize}px`,
+                        text: index,
+                        isMine,
+                        nearbyMines,
+                        flagEnabled,
+                        hidden: true
+                    }
+                }),
+                safeBlocksLeft: difficulty.blocks - difficulty.mines
+                
+            })
         }
         catch(e){console.error(e)}
       }
@@ -164,13 +169,49 @@ const Board = ({difficulty, onGameStarted, onGameEnded, onFlagSubstract, onFlagA
 
     useEffect(() => {
         blockGenerator(board.current.offsetWidth, board.current.offsetHeight)
-        console.log(board.current);
+        console.log('entro jeje');
+        setMinesPosition(generateMinesPosition())
     }, [difficulty])
+
+    useEffect(() => {
+        blockGenerator(board.current.offsetWidth, board.current.offsetHeight)
+    }, [flagEnabled, minesPosition])
 
     return(
  
         <div ref={board} className='board' onContextMenu={handleClick} onClick={handleClick}>
-            {blocks}
+            {blocks && blocks.array.filter(block => block.hidden === false).length === blocks.length - difficulty.mines
+            ? blocks.array.map(block => {
+
+                return <Block 
+                index={block.index}
+                key={block.index} 
+                size={block.size} 
+                text={block.index} 
+                mine={block.isMine} 
+                nearbyMines={block.nearbyMines}
+                onBlockClicked={handleBlockClicked}
+                onGameLost={() => {onGameEnded('lose')}}
+                onFlagSubstract={handleFlagSubstract}
+                onFlagAdd={handleFlagAdd}
+                flagEnabled={block.flagEnabled}
+                isHidden={false}/>
+            })
+            : blocks && blocks.array.map(block => 
+                <Block 
+                index={block.index}
+                key={block.index} 
+                size={block.size} 
+                text={block.index} 
+                mine={block.isMine} 
+                nearbyMines={block.nearbyMines}
+                onBlockClicked={handleBlockClicked}
+                onGameEnd={(result) => {onGameEnded(result)}}
+                onFlagSubstract={handleFlagSubstract}
+                onFlagAdd={handleFlagAdd}
+                flagEnabled={block.flagEnabled}
+                lastBlock={blocks.safeBlocksLeft === 1 && !block.isMine ? true : false}/>)
+            }
         </div>
         
     )
