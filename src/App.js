@@ -6,7 +6,7 @@ import './App.css';
 
 const difficultyOptions = {
   easy: {
-    mines: 78,
+    mines: 2,
     blocks: 81
   },
   normal: {

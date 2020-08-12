@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import FlagIcon from '@material-ui/icons/Flag'
 import PropTypes from 'prop-types'
 import './Block.css'
@@ -65,9 +65,13 @@ const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagA
             
     }
 
+    useEffect(() => {
+        setHidden(isHidden)
+    }, [isHidden])
+
     return(
         <div style={blockStyle} onContextMenu={handleRightClick} onClick={handleClick} className={hidden ? 'block-hidden' : 'block'}>
-            {mine.toString()}
+            {index}
             {hidden && hasFlag && <p style={{color: 'red'}}><FlagIcon fontSize='small' /></p>}
             {!hidden && <p style={textStyle}>
                 {mine ? <span role='img' aria-label='emoji-bomb'>💣</span> : nearbyMines}

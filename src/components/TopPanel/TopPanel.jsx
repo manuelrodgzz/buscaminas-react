@@ -16,11 +16,14 @@ const TopPanel = ({onTimerUpdate, flagsLeft, difficultyOptions, onDifficultyChan
             onDifficultyChanged(difficultyOptions[difficultySelector.current.value])
         })
 
+        //Si startTimer es true se inicia el cronómetro
         if(startTimer)
             interval = setInterval(() => {
                 setTimer(timer + 1);
                 onTimerUpdate(timer+1)
             }, 1000)
+        else //Si es falso, el cronometro se setea en 0
+            setTimer(0)
     
         return  () => {
             difficultySelector.current.removeEventListener('change', () => {
