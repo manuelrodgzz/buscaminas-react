@@ -1,5 +1,4 @@
 import React, {useState, useEffect, useRef} from 'react'
-import ResizeDetector from 'react-resize-detector'
 import './Board.css'
 import Block from '../Block'
 
@@ -56,7 +55,7 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
 
         //if block is in bottom row
         
-        if(blockIdx >= difficulty.blocks-blocksPerRow-1 && blockIdx <= difficulty.blocks-1)
+        if(blockIdx > difficulty.blocks-blocksPerRow-1 && blockIdx <= difficulty.blocks-1)
             notBlocksAround.push(bottom_left, bottom, bottom_right)
 
         //delete duplicated posible mines
@@ -64,6 +63,8 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
 
         notBlocksAround.map(notPossible => {
             blocksAround = blocksAround.filter(possible => possible !== notPossible)
+
+            return notPossible
         })
 
         return blocksAround
@@ -97,7 +98,7 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
      * prevIteratedBlocks: Array variable to store blocks which have been iterated previously when the function 
      *  executes itself more than once
      */
-    const zeroBlockClicked = (index, prevIteratedBlocks) => {
+    const zeroBlockClicked = (index, prevIteratedBlocks, arrayIndexToUnhide) => {
 
         if(!prevIteratedBlocks)
             prevIteratedBlocks = []
@@ -109,19 +110,25 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
         let blocksPerRow = Math.floor(board.current.offsetWidth/blockSize)
 
         let blocksAround = getBlocksAround(index, blocksPerRow)
-        let arrayIndexToUnhide = []
+        arrayIndexToUnhide = arrayIndexToUnhide || [index]
 
         prevIteratedBlocks.push(index)
+        if(!arrayIndexToUnhide.includes(index))
+            arrayIndexToUnhide.push(index)
+
         blocks.array.map(block => {
 
-            if(blocksAround.includes(block.index) && !prevIteratedBlocks.includes(block.index)){
-
-                arrayIndexToUnhide.push(block.index)
+            if(block.hidden && blocksAround.includes(block.index) && !prevIteratedBlocks.includes(block.index)){
+                
+                if(!arrayIndexToUnhide.includes(block.index))
+                    arrayIndexToUnhide.push(block.index)
                 
                 if(block.nearbyMines === 0)
-                    zeroBlockClicked(block.index, prevIteratedBlocks).map(index => {
+                    zeroBlockClicked(block.index, prevIteratedBlocks, arrayIndexToUnhide).map(index => {
                         if(!arrayIndexToUnhide.includes(index))
                             arrayIndexToUnhide.push(index)
+
+                        return index
                     })
             }
             return block
@@ -133,13 +140,17 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
     const handleBlockClicked = (index) => {
 
         let blocksToUnhide = []
+        let isZeroBlock = false
 
         if(blocks.array[index].nearbyMines === 0){
             blocksToUnhide = zeroBlockClicked(index)
+            isZeroBlock = true
         }
 
+        // console.log(index, blocksToUnhide.sort((a, b) => a-b))
+
         let safeBlocksLeft = blocksToUnhide.length > 0 
-            ? blocks.safeBlocksLeft-blocksToUnhide.length-1 
+            ? blocks.safeBlocksLeft-blocksToUnhide.length
             : blocks.safeBlocksLeft-1
 
         setBlocks({
@@ -153,18 +164,35 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
             safeBlocksLeft
         })
 
-        console.log('safeBlocksLeft', safeBlocksLeft)
-        if(safeBlocksLeft === 0)
+        if(safeBlocksLeft === 0 && isZeroBlock)
             handleGameEnd('win')
 
     }
 
-    const handleFlagAdd = () =>{
+    const handleFlagAdd = (index) =>{
         onFlagAdd()
+        setBlocks({
+            ...blocks,
+            array: blocks.array.map(block => {
+                if(block.index === index)
+                    block.hasFlag = true
+
+                return block
+            })
+        })
     }
 
-    const handleFlagSubstract = () => {
+    const handleFlagSubstract = (index) => {
         onFlagSubstract()
+        setBlocks({
+            ...blocks,
+            array: blocks.array.map(block => {
+                if(block.index === index)
+                    block.hasFlag = false
+
+                return block
+            })
+        })
     }
 
     const blockGenerator = (boardWidth, boardHeight) => {
@@ -199,9 +227,11 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
                     }
 
                     return {
+                        /*El generar este ID me permite que cada que genere mas bloques, cambie el ID y
+                        el componente Block se reinicie, así cada que termina una partida se quitan las banderas*/ 
+                        id: Math.random().toString(36).substr(2, 9), //genero id unico
                         index,
                         size: `${blockSize}px`,
-                        text: index,
                         isMine,
                         nearbyMines,
                         flagEnabled,
@@ -226,19 +256,38 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
     }
 
     const handleGameEnd = (result) => {
+        console.log('game end', result)
         onGameEnded(result)
         setGameStarted(false)
     }
 
     useEffect(() => {
-        if(!gameStarted){
-        blockGenerator(board.current.offsetWidth, board.current.offsetHeight)
-        setMinesPosition(generateMinesPosition())}
+        if(!gameStarted || blocks.safeBlocksLeft === 0){
+
+            blockGenerator(board.current.offsetWidth, board.current.offsetHeight)
+            setMinesPosition(generateMinesPosition())
+            console.log('gamse start')
+        }
     }, [difficulty, gameStarted])
 
     useEffect(() => {
+        
         blockGenerator(board.current.offsetWidth, board.current.offsetHeight)
-    }, [flagEnabled, minesPosition])
+    }, [minesPosition])
+
+
+    useEffect(() => {
+        if(blocks){
+        setBlocks({
+            ...blocks,
+            array: blocks.array.map(block => {
+                block.flagEnabled = flagEnabled
+                
+                return block
+            })
+        })
+    }
+    }, [flagEnabled])
 
     return(
         
@@ -248,9 +297,8 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
 
                 return <Block 
                 index={block.index}
-                key={block.index} 
+                key={block.id} 
                 size={block.size} 
-                text={block.index} 
                 mine={block.isMine} 
                 nearbyMines={block.nearbyMines}
                 onBlockClicked={handleBlockClicked}

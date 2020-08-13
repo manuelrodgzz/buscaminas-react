@@ -3,11 +3,11 @@ import FlagIcon from '@material-ui/icons/Flag'
 import PropTypes from 'prop-types'
 import './Block.css'
 
-const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagAdd, index, size, text, mine, nearbyMines, isHidden, onGameEnd}) => {
+const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagAdd, index, size, mine, nearbyMines, isHidden, onGameEnd}) => {
 
 
     const [hidden, setHidden] = useState(isHidden)
-    const [hasFlag, setHasFlag] = useState(false)
+    const [flag, setFlag] = useState(false)
 
     //Este estilo sirve para que el width tenga x porcentaje y el height tenga el mismo x porcentaje pero basado en el width
     const blockStyle = {
@@ -43,7 +43,6 @@ const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagA
 
         if(mine){
             onGameEnd('lose')
-            console.log('perdiste 1');
         }
     }
 
@@ -51,17 +50,17 @@ const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagA
 
         e.preventDefault()
             
-        if(hasFlag){
-            onFlagAdd()
+        if(flag){
+            onFlagAdd(index)
         }
         else{
             if(!flagEnabled)
                 return
                 
-            onFlagSubstract()
+            onFlagSubstract(index)
         }
         
-        setHasFlag(!hasFlag)
+        setFlag(!flag)
             
     }
 
@@ -71,8 +70,7 @@ const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagA
 
     return(
         <div style={blockStyle} onContextMenu={handleRightClick} onClick={handleClick} className={hidden ? 'block-hidden' : 'block'}>
-            {index}
-            {hidden && hasFlag && <p style={{color: 'red'}}><FlagIcon fontSize='small' /></p>}
+            {hidden && flag && <p style={{color: 'red'}}><FlagIcon fontSize='small' /></p>}
             {!hidden && <p style={textStyle}>
                 {mine ? <span role='img' aria-label='emoji-bomb'>💣</span> : nearbyMines}
             </p>}

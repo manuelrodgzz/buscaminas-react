@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState} from 'react';
 import TopPanel from './components/TopPanel'
 import Board from './components/Board'
 import Alert from './utils/Alert'
@@ -6,12 +6,12 @@ import './App.css';
 
 const difficultyOptions = {
   easy: {
-    mines: 2,
+    mines: 10,
     blocks: 81
   },
   normal: {
-    mines: 35,
-    blocks: 132
+    mines: 45,
+    blocks: 272
   },
   hard: {
     mines: 75,
@@ -33,7 +33,7 @@ function App() {
 
   const handleGameEnd = (result) => {
     setStartTimer(false)
-
+    setFlagsLeft(difficulty.mines)
     const win = result === 'win' ? true : false
 
     Alert.GameEnd(win, timer, () => {})
