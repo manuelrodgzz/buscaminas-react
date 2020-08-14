@@ -14,8 +14,8 @@ const difficultyOptions = {
     blocks: 272
   },
   hard: {
-    mines: 75,
-    blocks: 210
+    mines: 81,
+    blocks: 462 
   }
 }
 

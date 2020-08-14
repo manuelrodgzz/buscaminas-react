@@ -258,7 +258,12 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
     const handleGameEnd = (result) => {
         console.log('game end', result)
         onGameEnded(result)
-        setGameStarted(false)
+        if(gameStarted)
+            setGameStarted(false)
+        else{
+            blockGenerator(board.current.offsetWidth, board.current.offsetHeight)
+            setMinesPosition(generateMinesPosition())
+        }
     }
 
     useEffect(() => {
@@ -266,9 +271,15 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
 
             blockGenerator(board.current.offsetWidth, board.current.offsetHeight)
             setMinesPosition(generateMinesPosition())
-            console.log('gamse start')
+            console.log('game start')
         }
-    }, [difficulty, gameStarted])
+    }, [gameStarted])
+
+    useEffect(() => {
+        blockGenerator(board.current.offsetWidth, board.current.offsetHeight)
+        setMinesPosition(generateMinesPosition())
+        console.log('gamse start')
+    }, [difficulty])
 
     useEffect(() => {
         
