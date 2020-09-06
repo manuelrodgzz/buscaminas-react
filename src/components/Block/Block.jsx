@@ -3,7 +3,7 @@ import FlagIcon from '@material-ui/icons/Flag'
 import PropTypes from 'prop-types'
 import './Block.css'
 
-const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagAdd, index, size, mine, nearbyMines, isHidden, onGameEnd}) => {
+const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagAdd, index, mine, nearbyMines, isHidden, onGameEnd}) => {
 
 
     const [hidden, setHidden] = useState(isHidden)
@@ -78,7 +78,6 @@ const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagA
 
 Block.propTypes = {
     index: PropTypes.number.isRequired,
-    size: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     mine: PropTypes.bool,
     text: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     nearbyMines: PropTypes.number.isRequired,

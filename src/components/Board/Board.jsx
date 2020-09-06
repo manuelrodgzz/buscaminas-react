@@ -11,9 +11,11 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
 
     const board = useRef()
 
+    const blocksPerRow = Math.sqrt(difficulty.blocks)
+
     const style = {
-        gridTemplateRows: `repeat(${Math.sqrt(difficulty.blocks)}, 1fr)`,
-        gridTemplateColumns: `repeat(${Math.sqrt(difficulty.blocks)}, 1fr)`
+        gridTemplateRows: `repeat(${blocksPerRow}, 1fr)`,
+        gridTemplateColumns: `repeat(${blocksPerRow}, 1fr)`
     }
 
     const generateMinesPosition = () => {
@@ -109,12 +111,6 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
         if(!prevIteratedBlocks)
             prevIteratedBlocks = []
 
-        let blocksToGenerate = difficulty.blocks
-        let boardArea = board.current.offsetWidth * board.current.offsetHeight
-        let blockArea = boardArea/blocksToGenerate
-        let blockSize = Math.sqrt(blockArea)
-        let blocksPerRow = Math.floor(board.current.offsetWidth/blockSize)
-
         let blocksAround = getBlocksAround(index, blocksPerRow)
         arrayIndexToUnhide = arrayIndexToUnhide || [index]
 
@@ -153,7 +149,7 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
             isZeroBlock = true
         }
 
-        // console.log(index, blocksToUnhide.sort((a, b) => a-b))
+        console.log(index, blocksToUnhide.sort((a, b) => a-b))
 
         let safeBlocksLeft = blocksToUnhide.length > 0 
             ? blocks.safeBlocksLeft-blocksToUnhide.length
@@ -205,17 +201,12 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
         try {
             let array = []
 
-            let blocksToGenerate = difficulty.blocks
-            let boardArea = boardWidth * boardHeight
-            let blockArea = boardArea/blocksToGenerate
-            let blockSize = Math.sqrt(blockArea)
-            let blocksPerRow = Math.floor(boardWidth/blockSize)
             // console.log('blocksToGenerate', blocksToGenerate);
             // console.log('blockSize', blockSize);
     
             //console.log(minesLocation);
 
-            for(let i = 0; i < blocksToGenerate; i++)
+            for(let i = 0; i < difficulty.blocks; i++)
                 array.push('')
         
             
@@ -237,7 +228,6 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
                         el componente Block se reinicie, así cada que termina una partida se quitan las banderas*/ 
                         id: Math.random().toString(36).substr(2, 9), //genero id unico
                         index,
-                        size: `${blockSize}px`,
                         isMine,
                         nearbyMines,
                         flagEnabled,
@@ -315,7 +305,6 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
                 return <Block 
                 index={block.index}
                 key={block.id} 
-                size={block.size} 
                 mine={block.isMine} 
                 nearbyMines={block.nearbyMines}
                 onBlockClicked={handleBlockClicked}
