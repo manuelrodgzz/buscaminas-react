@@ -4,9 +4,9 @@ const GameEnd = (win, timeLeft, fnRestart) => {
 
     
     Swal.fire({
-        title: win ? 'YOU WIN!🎉🎉🎉' : 'YOU LOSE 😭😭😭',
-        text: `${timeLeft} seconds.`,
-        confirmButtonText: 'Restart'
+        title: win ? '¡GANASTE!🎉🎉🎉' : '¡PERDISTE! 😭😭😭',
+        text: `${timeLeft} segundos.`,
+        confirmButtonText: 'Reiniciar'
     }).then((result) => {
         if(result.value){
             fnRestart()

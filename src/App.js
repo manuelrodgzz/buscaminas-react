@@ -10,12 +10,12 @@ const difficultyOptions = {
     blocks: 81
   },
   normal: {
-    mines: 45,
-    blocks: 272
+    mines: 62,
+    blocks: 289
   },
   hard: {
-    mines: 81,
-    blocks: 462 
+    mines: 105,
+    blocks: 484 
   }
 }
 
@@ -25,6 +25,7 @@ function App() {
   const [difficulty, setDifficulty] = useState(difficultyOptions.easy)
   const [startTimer, setStartTimer] = useState(false)
   const [timer, setTimer] = useState(0)
+  const [keyBoard, setKeyBoard] = useState(new Date().getTime()) //sirve para reiniciar el componente Board
 
   const beginTimer = () => {
     if(!startTimer)
@@ -42,6 +43,8 @@ function App() {
   const handleDifficultyChanged = (newDifficulty) => {
     setDifficulty(newDifficulty)
     setFlagsLeft(newDifficulty.mines)
+    setStartTimer(false)
+    setKeyBoard(new Date().getTime())
   }
 
   const handleFlagSubstract = () => {
@@ -60,7 +63,7 @@ function App() {
     <div className="app">
       <div className='game'>
         <TopPanel onTimerUpdate={handleTimerUpdate} flagsLeft={flagsLeft} onDifficultyChanged={handleDifficultyChanged} difficultyOptions={difficultyOptions} startTimer={startTimer}/>
-        <Board 
+        <Board key={keyBoard}
         onFlagSubstract={handleFlagSubstract} 
         onFlagAdd={handleFlagAdd} 
         onGameEnded={handleGameEnd} 

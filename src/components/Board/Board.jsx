@@ -2,6 +2,7 @@ import React, {useState, useEffect, useRef} from 'react'
 import './Board.css'
 import Block from '../Block'
 
+/**toggleGameStarted solo lo uso para reiniciar el componente Board cada que se cambia de dificultad */
 const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubstract, onFlagAdd}) => {
 
     const [gameStarted, setGameStarted] = useState(false)
@@ -9,6 +10,11 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
     const [minesPosition, setMinesPosition] = useState([])
 
     const board = useRef()
+
+    const style = {
+        gridTemplateRows: `repeat(${Math.sqrt(difficulty.blocks)}, 1fr)`,
+        gridTemplateColumns: `repeat(${Math.sqrt(difficulty.blocks)}, 1fr)`
+    }
 
     const generateMinesPosition = () => {
 
@@ -302,7 +308,7 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
 
     return(
         
-        <div ref={board} className='board' onContextMenu={handleClick} onClick={handleClick}>
+        <div ref={board} className='board' style={style} onContextMenu={handleClick} onClick={handleClick}>
             {//Si ya se descubrieron todos los bloques no que no son bombas
             blocks && blocks.array.map(block => {
 

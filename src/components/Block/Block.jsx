@@ -11,8 +11,6 @@ const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagA
 
     //Este estilo sirve para que el width tenga x porcentaje y el height tenga el mismo x porcentaje pero basado en el width
     const blockStyle = {
-        width: size,
-        height: size,
         boxSizing: 'border-box',
         position: 'relative',
         float: 'left',
@@ -72,7 +70,7 @@ const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagA
         <div style={blockStyle} onContextMenu={handleRightClick} onClick={handleClick} className={hidden ? 'block-hidden' : 'block'}>
             {hidden && flag && <p style={{color: 'red'}}><FlagIcon fontSize='small' /></p>}
             {!hidden && <p style={textStyle}>
-                {mine ? <span role='img' aria-label='emoji-bomb'>💣</span> : nearbyMines}
+                {mine ? <span role='img' aria-label='emoji-bomb'>💣</span> : nearbyMines > 0 ? nearbyMines : ''}
             </p>}
         </div>
     )
