@@ -1,6 +1,23 @@
 .block-hidden, .block{
+    
     display: inline-block;
     border: 1px solid black;
+}
+
+.mobile-options{
+    position: absolute;
+    margin-top: -10%;
+    margin-left: -10%;
+    display: grid;
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.mobile-options button{
+    border-radius: 50%;
+    background-color: #ff1e35;
+    border: none;
+    margin: 1px;
 }
 
 .block{

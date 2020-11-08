@@ -3,7 +3,8 @@ import FlagIcon from '@material-ui/icons/Flag'
 import PropTypes from 'prop-types'
 import './Block.css'
 
-const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagAdd, index, mine, nearbyMines, isHidden, onGameEnd}) => {
+const Block = ({lastBlock, onBlockClicked, isMobile, showOptions, onShowOptions, onHideOptions, flagEnabled, 
+    onFlagSubstract, onFlagAdd, index, mine, nearbyMines, isHidden, onGameEnd}) => {
 
 
     const [hidden, setHidden] = useState(isHidden)
@@ -12,7 +13,7 @@ const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagA
     //Este estilo sirve para que el width tenga x porcentaje y el height tenga el mismo x porcentaje pero basado en el width
     const blockStyle = {
         boxSizing: 'border-box',
-        position: 'relative',
+        border: `1px solid ${showOptions ? 'yellow' : 'black'}`,
         float: 'left',
         color: mine ? 'red' : 'black',
         textAlign: 'center',
@@ -23,7 +24,8 @@ const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagA
         color: mine ? 'red' : 'green'    
     }
 
-    const handleClick = () => {
+    const handleBlockClicked = (e) => {
+        e.stopPropagation()
 
         if(hidden){
 
@@ -44,8 +46,19 @@ const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagA
         }
     }
 
-    const handleRightClick = (e) => {
+    const handleClick = () => {
 
+        if(!isMobile){
+            handleBlockClicked()
+        }
+        else{
+            onShowOptions(index)
+        }
+        
+    }
+
+    const handleRightClick = (e) => {
+        e.stopPropagation()
         e.preventDefault()
             
         if(flag){
@@ -62,16 +75,31 @@ const Block = ({lastBlock, onBlockClicked, flagEnabled, onFlagSubstract, onFlagA
             
     }
 
+    const handleHideOptions = (e) => {
+        e.stopPropagation()
+        onHideOptions()
+    }
+
+    const mobileOptions = (
+        <div className='mobile-options'>
+            <button onClick={handleBlockClicked}>⛏</button>
+            <button onClick={handleRightClick}><FlagIcon fontSize='small' /></button>
+            <button onClick={handleHideOptions}>X</button>
+        </div>
+    )
+
     useEffect(() => {
         setHidden(isHidden)
     }, [isHidden])
 
     return(
         <div style={blockStyle} onContextMenu={handleRightClick} onClick={handleClick} className={hidden ? 'block-hidden' : 'block'}>
+            {showOptions ? mobileOptions : ''}
             {hidden && flag && <p style={{color: 'red'}}><FlagIcon fontSize='small' /></p>}
             {!hidden && <p style={textStyle}>
                 {mine ? <span role='img' aria-label='emoji-bomb'>💣</span> : nearbyMines > 0 ? nearbyMines : ''}
             </p>}
+
         </div>
     )
 }

@@ -9,6 +9,8 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
     const [blocks, setBlocks] = useState(null)
     const [minesPosition, setMinesPosition] = useState([])
 
+    const isMobile = window.innerWidth < 1050
+
     const board = useRef()
 
     const blocksPerRow = Math.sqrt(difficulty.blocks)
@@ -160,6 +162,8 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
             
                 if(block.index === index || blocksToUnhide.includes(block.index))
                     block.hidden = false
+
+                block.showsOptions = false
                 
                 return block
             }),
@@ -179,6 +183,7 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
                 if(block.index === index)
                     block.hasFlag = true
 
+                block.showsOptions = false
                 return block
             })
         })
@@ -192,6 +197,7 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
                 if(block.index === index)
                     block.hasFlag = false
 
+                block.showsOptions = false
                 return block
             })
         })
@@ -231,7 +237,8 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
                         isMine,
                         nearbyMines,
                         flagEnabled,
-                        hidden: true
+                        hidden: true,
+                        showsOptions: false //Sirve para saber si se está mostrando las opciones de acción de versión móvil
                     }
                 }),
                 safeBlocksLeft: difficulty.blocks - difficulty.mines
@@ -260,6 +267,36 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
             blockGenerator(board.current.offsetWidth, board.current.offsetHeight)
             setMinesPosition(generateMinesPosition())
         }
+    }
+
+    const handleShowOptions = (blockIdx) => {
+
+        const newArray = blocks.array.map((block, index) => {
+            
+            block.showsOptions = index === blockIdx ? true : false
+
+            return block
+        })
+        console.log('show')
+        setBlocks({
+            ...blocks,
+            array: newArray
+        })
+    }
+
+    const handleHideOptions = () => {
+
+        const newArray = blocks.array.map((block) => {
+            
+            block.showsOptions = false
+
+            return block
+        })
+        console.log('hide')
+        setBlocks({
+            ...blocks,
+            array: newArray
+        })
     }
 
     useEffect(() => {
@@ -305,8 +342,12 @@ const Board = ({flagEnabled, difficulty, onGameStarted, onGameEnded, onFlagSubst
                 return <Block 
                 index={block.index}
                 key={block.id} 
-                mine={block.isMine} 
+                mine={block.isMine}
+                showOptions={block.showsOptions}
                 nearbyMines={block.nearbyMines}
+                isMobile={isMobile}
+                onShowOptions={handleShowOptions}
+                onHideOptions={handleHideOptions}
                 onBlockClicked={handleBlockClicked}
                 onGameEnd={handleGameEnd}
                 onFlagSubstract={handleFlagSubstract}
