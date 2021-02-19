@@ -25,7 +25,7 @@ const Block = ({lastBlock, onBlockClicked, isMobile, showsOptions, onShowOptions
     }
 
     const handleBlockClicked = (e) => {
-        e.stopPropagation()
+        e && e.stopPropagation()
         console.log('BlockClicked');
         if(hidden){
 
