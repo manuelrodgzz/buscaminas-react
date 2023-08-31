@@ -1,6 +1,9 @@
 *{margin: 0;}
 
 .app{
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: #fffcf9;
   width: 100vw;
   height: 100vh;
@@ -11,6 +14,4 @@
   height: 90%;
   max-width: 500px;
   max-height: 500px;
-  margin-right: auto;
-  margin-left: auto;
 }

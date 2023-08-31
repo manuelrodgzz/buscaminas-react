@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from 'react'
-import FlagIcon from '@material-ui/icons/Flag'
 import PropTypes from 'prop-types'
 import './Block.css'
 
@@ -90,8 +89,8 @@ const Block = ({lastBlock, onBlockClicked, isMobile, showsOptions, onShowOptions
     const mobileOptions = (
         <div className='mobile-options'>
             <button onClick={handleBlockClicked}>⛏</button>
-            <button onClick={handleRightClick}><FlagIcon fontSize='small' /></button>
-            <button onClick={handleHideOptions}>X</button>
+            <button onClick={handleRightClick}>🚩</button>
+            <button onClick={handleHideOptions}>❌</button>
         </div>
     )
 
@@ -103,7 +102,7 @@ const Block = ({lastBlock, onBlockClicked, isMobile, showsOptions, onShowOptions
         <div style={blockStyle} onContextMenu={handleRightClick} onClick={handleClick} 
         className={hidden ? 'block-hidden' : 'block'}>
             {showsOptions ? mobileOptions : ''}
-            {hidden && flag && <p style={{color: 'red'}}><FlagIcon fontSize='small' /></p>}
+            {hidden && flag && <p style={{color: 'red'}}>🚩</p>}
             {!hidden && <p style={textStyle}>
                 {mine ? <span role='img' aria-label='emoji-bomb'>💣</span> : nearbyMines > 0 ? nearbyMines : ''}
             </p>}

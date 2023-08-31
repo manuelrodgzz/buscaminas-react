@@ -1,6 +1,7 @@
 .block-hidden, .block{
-    
-    display: inline-block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: 1px solid black;
 }
 
@@ -15,11 +16,14 @@
 
 .mobile-options button{
     border-radius: 50%;
-    background-color: #ff1e35;
+    background-color: #352D39;
     border: none;
     margin: 1px;
     width: 2.5em;
     height: 2.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .block{
