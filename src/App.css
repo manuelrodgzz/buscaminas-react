@@ -9,6 +9,12 @@
   height: 100vh;
 }
 
+@media only screen and (max-width: 490px) {
+  .app {
+    align-items: initial;
+  }
+}
+
 .game{
   width: 90%;
   height: 90%;
